@@ -1,0 +1,33 @@
+{% load static %}<!DOCTYPE html>
+{% comment %}
+Deliberately standalone: a 500 means something is already broken, so this page
+avoids context processors, template inheritance and anything else that could
+fail a second time.
+{% endcomment %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Something went wrong — SupportIQ</title>
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="{% static 'css/output.css' %}">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+</head>
+<body class="flex min-h-screen items-center justify-center bg-white px-4 dark:bg-slate-950">
+  <div class="text-center">
+    <p class="text-8xl font-extrabold heading-gradient sm:text-9xl">500</p>
+    <h1 class="mt-4 text-3xl font-bold text-slate-900 sm:text-4xl dark:text-white">Something went wrong</h1>
+    <p class="mx-auto mt-4 max-w-md text-slate-600 dark:text-slate-400">
+      An unexpected error occurred on our side. It has been logged, and no data was lost.
+    </p>
+    <a href="/" class="btn-primary mt-8">Back to home</a>
+  </div>
+</body>
+</html>

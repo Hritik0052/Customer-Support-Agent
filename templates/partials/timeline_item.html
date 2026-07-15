@@ -1,0 +1,15 @@
+{% comment %}Params: n, title, body, delay, last{% endcomment %}
+<li class="reveal relative flex gap-6" {% if delay %}data-reveal-delay="{{ delay }}"{% endif %}>
+  <div class="flex flex-col items-center">
+    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-sm font-bold text-white shadow-lg shadow-brand-500/25">
+      {{ n }}
+    </span>
+    {% if not last %}
+      <span class="mt-2 w-px flex-1 bg-gradient-to-b from-brand-300 to-transparent dark:from-brand-700" aria-hidden="true"></span>
+    {% endif %}
+  </div>
+  <div class="pb-8">
+    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">{{ title }}</h3>
+    <p class="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{{ body }}</p>
+  </div>
+</li>

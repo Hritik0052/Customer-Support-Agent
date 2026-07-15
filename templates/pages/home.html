@@ -1,0 +1,135 @@
+{% extends "base_public.html" %}
+
+{% block title %}SupportIQ — Triage support tickets with AI{% endblock %}
+
+{% block content %}
+
+{# ===================== HERO ===================== #}
+<section class="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
+  {# Decorative animated blobs #}
+  <div class="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+    <div class="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-brand-400/25 blur-3xl animate-blob dark:bg-brand-600/20"></div>
+    <div class="absolute top-20 -right-32 h-96 w-96 rounded-full bg-accent-400/25 blur-3xl animate-blob dark:bg-accent-600/20" style="animation-delay:-6s"></div>
+    <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-sky-400/20 blur-3xl animate-blob dark:bg-sky-600/15" style="animation-delay:-12s"></div>
+  </div>
+
+  <div class="section grid items-center gap-14 lg:grid-cols-2">
+    <div>
+      <div class="reveal badge-brand mb-6">
+        <span class="relative flex h-2 w-2">
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75"></span>
+          <span class="relative inline-flex h-2 w-2 rounded-full bg-brand-600"></span>
+        </span>
+        Powered by open models via OpenRouter
+      </div>
+
+      <h1 class="reveal text-4xl leading-tight font-extrabold tracking-tight sm:text-5xl lg:text-6xl" data-reveal-delay="80">
+        Stop sorting tickets.<br>
+        <span class="heading-gradient animate-gradient">Start solving them.</span>
+      </h1>
+
+      <p class="reveal mt-6 max-w-xl text-lg text-slate-600 dark:text-slate-400" data-reveal-delay="160">
+        SupportIQ reads every incoming support ticket and instantly returns its
+        category, priority and sentiment — plus a summary and a ready-to-send
+        reply. What takes an agent three minutes takes eight seconds.
+      </p>
+
+      <div class="reveal mt-8 flex flex-col gap-3 sm:flex-row" data-reveal-delay="240">
+        {% if user.is_authenticated %}
+          <a href="{% url 'tickets:create' %}" class="btn-primary">
+            Classify a ticket
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+          </a>
+          <a href="{% url 'dashboard:index' %}" class="btn-secondary">Go to dashboard</a>
+        {% else %}
+          <a href="{% url 'accounts:register' %}" class="btn-primary">
+            Get started free
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+          </a>
+          <a href="{% url 'pages:how_it_works' %}" class="btn-secondary">See how it works</a>
+        {% endif %}
+      </div>
+
+      <p class="reveal mt-5 text-sm text-slate-500 dark:text-slate-500" data-reveal-delay="300">
+        No credit card required · Free open models · Your data stays in your database
+      </p>
+    </div>
+
+    {# ---------- Live typing demo ---------- #}
+    <div class="reveal" data-reveal-delay="200">
+      {% include "partials/demo.html" %}
+    </div>
+  </div>
+</section>
+
+{# ===================== STATS ===================== #}
+<section class="border-y border-slate-200 bg-slate-50 py-14 dark:border-slate-800 dark:bg-slate-900/40">
+  <div class="section grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
+    <div class="reveal">
+      <p class="text-4xl font-extrabold heading-gradient"><span data-countup="8">0</span>s</p>
+      <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-400">Average triage time</p>
+    </div>
+    <div class="reveal" data-reveal-delay="80">
+      <p class="text-4xl font-extrabold heading-gradient"><span data-countup="6">0</span></p>
+      <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-400">Ticket categories</p>
+    </div>
+    <div class="reveal" data-reveal-delay="160">
+      <p class="text-4xl font-extrabold heading-gradient"><span data-countup="4">0</span></p>
+      <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-400">Priority levels</p>
+    </div>
+    <div class="reveal" data-reveal-delay="240">
+      <p class="text-4xl font-extrabold heading-gradient"><span data-countup="100">0</span>%</p>
+      <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-400">Open source stack</p>
+    </div>
+  </div>
+</section>
+
+{# ===================== FEATURES ===================== #}
+<section class="py-24">
+  <div class="section">
+    <div class="reveal mx-auto max-w-2xl text-center">
+      <h2 class="text-3xl font-bold sm:text-4xl">Everything support triage needs</h2>
+      <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">
+        One AI pass extracts every signal your team would otherwise read for manually.
+      </p>
+    </div>
+
+    <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {% include "partials/feature_card.html" with delay=0 color="brand" title="Smart categorisation" body="Every ticket sorted into billing, bug, feature request, technical, account or general — no rules to maintain." icon="tag" %}
+      {% include "partials/feature_card.html" with delay=80 color="orange" title="Priority detection" body="Urgent, high, medium or low, judged on real business impact rather than how loudly the customer typed." icon="fire" %}
+      {% include "partials/feature_card.html" with delay=160 color="rose" title="Sentiment analysis" body="Spot frustrated customers before they churn. Tone is read separately from severity." icon="heart" %}
+      {% include "partials/feature_card.html" with delay=0 color="emerald" title="Instant summaries" body="A one-line version of a rambling paragraph, so an agent knows the issue at a glance." icon="doc" %}
+      {% include "partials/feature_card.html" with delay=80 color="violet" title="Suggested replies" body="A polite, specific draft reply ready to review and send. Edit it, or send it as-is." icon="chat" %}
+      {% include "partials/feature_card.html" with delay=160 color="sky" title="Analytics dashboard" body="Category, priority and sentiment distribution with 30-day volume trends and CSV/JSON export." icon="chart" %}
+    </div>
+  </div>
+</section>
+
+{# ===================== CTA ===================== #}
+<section class="pb-24">
+  <div class="section">
+    <div class="reveal relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-accent-700 px-6 py-16 text-center shadow-2xl sm:px-16">
+      <div class="pointer-events-none absolute inset-0 opacity-25" aria-hidden="true">
+        <div class="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-white/25 blur-3xl animate-float"></div>
+        <div class="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-accent-300/25 blur-3xl animate-float" style="animation-delay:-3s"></div>
+      </div>
+
+      <div class="relative">
+        <h2 class="text-3xl font-bold text-white sm:text-4xl">Ready to clear the queue?</h2>
+        <p class="mx-auto mt-4 max-w-xl text-lg text-brand-100">
+          Create an account and classify your first ticket in under a minute.
+        </p>
+        <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          {% if user.is_authenticated %}
+            <a href="{% url 'tickets:create' %}" class="btn bg-white text-brand-700 shadow-lg hover:-translate-y-0.5 hover:bg-brand-50">Classify a ticket</a>
+          {% else %}
+            <a href="{% url 'accounts:register' %}" class="btn bg-white text-brand-700 shadow-lg hover:-translate-y-0.5 hover:bg-brand-50">Get started free</a>
+            <a href="{% url 'accounts:login' %}" class="btn border border-white/30 text-white hover:bg-white/10">Sign in</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

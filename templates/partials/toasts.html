@@ -1,0 +1,34 @@
+{% if messages %}
+<div class="pointer-events-none fixed bottom-4 right-4 z-[100] flex w-full max-w-sm flex-col gap-2 sm:bottom-6 sm:right-6" role="status" aria-live="polite">
+  {% for message in messages %}
+    <div
+      x-data="{ show: false }"
+      x-init="$nextTick(() => show = true); setTimeout(() => show = false, 5000)"
+      x-show="show"
+      x-cloak
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 translate-x-8"
+      x-transition:enter-end="opacity-100 translate-x-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0 translate-x-8"
+      class="pointer-events-auto flex items-start gap-3 rounded-xl border p-4 shadow-lg backdrop-blur
+        {% if message.tags == 'success' %}border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200
+        {% elif message.tags == 'error' %}border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200
+        {% elif message.tags == 'warning' %}border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200
+        {% else %}border-brand-200 bg-brand-50 text-brand-900 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-200{% endif %}"
+    >
+      <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        {% if message.tags == 'success' %}<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/>
+        {% elif message.tags == 'error' %}<circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M15 9l-6 6M9 9l6 6"/>
+        {% elif message.tags == 'warning' %}<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/>
+        {% else %}<circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 16v-4M12 8h.01"/>{% endif %}
+      </svg>
+      <p class="flex-1 text-sm font-medium">{{ message }}</p>
+      <button type="button" @click="show = false" class="shrink-0 opacity-60 transition-opacity hover:opacity-100" aria-label="Dismiss">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}

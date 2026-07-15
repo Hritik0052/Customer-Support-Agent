@@ -1,0 +1,101 @@
+{% extends "base_public.html" %}
+
+{% block title %}How it works — SupportIQ{% endblock %}
+
+{% block content %}
+
+<section class="relative overflow-hidden pt-32 pb-16 sm:pt-40">
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="absolute -top-24 left-1/4 h-96 w-96 rounded-full bg-brand-400/20 blur-3xl animate-blob dark:bg-brand-600/15"></div>
+  </div>
+  <div class="section text-center">
+    <div class="reveal badge-brand mb-6">How it works</div>
+    <h1 class="reveal text-4xl font-extrabold tracking-tight sm:text-5xl" data-reveal-delay="60">
+      Paste a ticket. <span class="heading-gradient">Get an answer.</span>
+    </h1>
+    <p class="reveal mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400" data-reveal-delay="120">
+      Four steps, about eight seconds, no configuration.
+    </p>
+  </div>
+</section>
+
+<section class="pb-20">
+  <div class="section mx-auto max-w-3xl">
+    <ol class="space-y-2">
+      {% include "partials/timeline_item.html" with n="1" title="Paste the ticket" body="Customer name, email, subject and message. That's the whole form — no tags to pick, no queue to choose, no rules to configure." %}
+      {% include "partials/timeline_item.html" with n="2" title="The prompt goes out" body="Your ticket is wrapped in a constrained prompt that pins the exact JSON shape and the exact allowed values, then sent to an open model through OpenRouter." delay=80 %}
+      {% include "partials/timeline_item.html" with n="3" title="The response gets checked" body="The reply is stripped of markdown fences, brace-matched, repaired if needed, and every value is validated against the allowed set before it is trusted." delay=160 %}
+      {% include "partials/timeline_item.html" with n="4" title="You get the result" body="Category, priority, sentiment, summary, confidence and a draft reply — saved to your history and rolled into your dashboard." delay=240 last=True %}
+    </ol>
+  </div>
+</section>
+
+{# ---------- The pipeline ---------- #}
+<section class="border-y border-slate-200 bg-slate-50 py-20 dark:border-slate-800 dark:bg-slate-900/40">
+  <div class="section">
+    <div class="reveal mx-auto max-w-2xl text-center">
+      <h2 class="text-3xl font-bold">Under the hood</h2>
+      <p class="mt-4 text-slate-600 dark:text-slate-400">
+        The API call is the easy part. Everything interesting is what happens when the model misbehaves.
+      </p>
+    </div>
+
+    <div class="mx-auto mt-12 max-w-4xl">
+      <div class="reveal card overflow-hidden">
+        <div class="flex items-center gap-2 border-b border-slate-200 px-5 py-3 dark:border-slate-800">
+          <span class="h-2.5 w-2.5 rounded-full bg-rose-400"></span>
+          <span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span>
+          <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
+          <span class="ml-2 font-mono text-xs text-slate-400">what the model actually returns</span>
+        </div>
+        <div class="overflow-x-auto p-5">
+          <pre class="font-mono text-xs leading-relaxed text-slate-600 dark:text-slate-400"><code>Sure! Here's the analysis:
+
+```json
+{
+  "category": "Billing Issue",     <span class="text-rose-500">// not one of our six</span>
+  "priority": "P1",                <span class="text-rose-500">// not one of our four</span>
+  "sentiment": "frustrated",       <span class="text-rose-500">// not one of our three</span>
+  "confidence": "94%",             <span class="text-rose-500">// a string, not a float</span>
+  "summary": "Customer double-charged...",
+}                                  <span class="text-rose-500">// trailing comma</span>
+```
+
+Let me know if you need anything else!</code></pre>
+        </div>
+        <div class="border-t border-slate-200 bg-emerald-50 p-5 dark:border-slate-800 dark:bg-emerald-500/5">
+          <p class="mb-3 text-xs font-semibold tracking-wide text-emerald-700 uppercase dark:text-emerald-400">what reaches your database</p>
+          <div class="overflow-x-auto">
+            <pre class="font-mono text-xs leading-relaxed text-slate-700 dark:text-slate-300"><code>{
+  "category":   "billing",
+  "priority":   "high",
+  "sentiment":  "negative",
+  "confidence": 0.94,
+  "summary":    "Customer double-charged..."
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <p class="reveal mt-6 text-center text-sm text-slate-500 dark:text-slate-500" data-reveal-delay="80">
+        Free models are unreliable about "return only JSON". The parser assumes that and copes,
+        so a chatty model never becomes a 500 page.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="py-20">
+  <div class="section text-center">
+    <h2 class="reveal text-3xl font-bold">Try it yourself</h2>
+    <div class="reveal mt-8" data-reveal-delay="60">
+      {% if user.is_authenticated %}
+        <a href="{% url 'tickets:create' %}" class="btn-primary">Classify a ticket</a>
+      {% else %}
+        <a href="{% url 'accounts:register' %}" class="btn-primary">Get started free</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

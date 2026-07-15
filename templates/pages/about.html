@@ -1,0 +1,152 @@
+{% extends "base_public.html" %}
+
+{% block title %}About — SupportIQ{% endblock %}
+{% block description %}Why SupportIQ exists, how it was built, and the stack behind it.{% endblock %}
+
+{% block content %}
+
+<section class="relative overflow-hidden pt-32 pb-16 sm:pt-40">
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-brand-400/20 blur-3xl animate-blob dark:bg-brand-600/15"></div>
+  </div>
+
+  <div class="section text-center">
+    <div class="reveal badge-brand mb-6">About us</div>
+    <h1 class="reveal text-4xl font-extrabold tracking-tight sm:text-5xl" data-reveal-delay="60">
+      Support teams drown in <span class="heading-gradient">triage</span>, not in solving.
+    </h1>
+    <p class="reveal mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400" data-reveal-delay="120">
+      SupportIQ started from a simple observation: agents spend more time reading,
+      labelling and routing tickets than actually fixing problems. That work is
+      real, repetitive, and exactly what a language model is good at.
+    </p>
+  </div>
+</section>
+
+{# ---------- Story ---------- #}
+<section class="pb-20">
+  <div class="section grid gap-12 lg:grid-cols-2 lg:gap-16">
+    <div class="reveal">
+      <h2 class="text-2xl font-bold sm:text-3xl">The problem</h2>
+      <div class="mt-5 space-y-4 text-slate-600 dark:text-slate-400">
+        <p>
+          A support agent opening a fresh queue has to answer the same questions for
+          every single ticket. What is this about? How urgent is it? Is this person
+          angry? What do I even say back?
+        </p>
+        <p>
+          Answering those four questions takes two to three minutes per ticket. On a
+          hundred-ticket day that is four hours of reading before a single problem
+          gets solved. Worse, it is inconsistent: the same ticket gets labelled
+          differently depending on who opens it and how tired they are.
+        </p>
+        <p>
+          Rules-based routing was the old answer, and it breaks constantly. Keyword
+          rules cannot tell the difference between "I was charged twice" and "I want
+          to be charged annually instead".
+        </p>
+      </div>
+    </div>
+
+    <div class="reveal" data-reveal-delay="100">
+      <h2 class="text-2xl font-bold sm:text-3xl">The approach</h2>
+      <div class="mt-5 space-y-4 text-slate-600 dark:text-slate-400">
+        <p>
+          SupportIQ sends each ticket through a single, carefully constrained prompt
+          and gets structured JSON back: category, priority, sentiment, a summary, a
+          confidence score, and a suggested reply.
+        </p>
+        <p>
+          The interesting engineering is not the API call — it is everything around
+          it. Language models are enthusiastic and imprecise. They wrap JSON in
+          markdown fences, invent category names that were never offered, and return
+          confidence as "85%" when asked for a number between zero and one.
+        </p>
+        <p>
+          So the parser assumes the model will misbehave and copes: it strips fences,
+          finds the first brace-balanced object, repairs trailing commas, and maps
+          invented categories back onto the real ones. A bad response degrades into a
+          sensible default instead of a stack trace.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ---------- Principles ---------- #}
+<section class="border-y border-slate-200 bg-slate-50 py-20 dark:border-slate-800 dark:bg-slate-900/40">
+  <div class="section">
+    <h2 class="reveal text-center text-3xl font-bold">What we optimised for</h2>
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      <div class="reveal card p-6">
+        <div class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand-100 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <h3 class="font-semibold text-slate-900 dark:text-white">Fails softly</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          When the AI is unavailable or returns nonsense, the ticket is still saved and
+          you get a retry button. An outage never loses a customer's message.
+        </p>
+      </div>
+
+      <div class="reveal card p-6" data-reveal-delay="80">
+        <div class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </div>
+        <h3 class="font-semibold text-slate-900 dark:text-white">Your data stays yours</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          Tickets live in your own database. Each account only ever sees its own
+          tickets, enforced at the query layer rather than hidden in the UI.
+        </p>
+      </div>
+
+      <div class="reveal card p-6" data-reveal-delay="160">
+        <div class="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+        </div>
+        <h3 class="font-semibold text-slate-900 dark:text-white">Open all the way down</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          Open models through OpenRouter, an open framework, and an AI layer you can
+          point at a different provider by editing one file.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ---------- Stack ---------- #}
+<section class="py-20">
+  <div class="section">
+    <div class="reveal mx-auto max-w-2xl text-center">
+      <h2 class="text-3xl font-bold">Built with</h2>
+      <p class="mt-4 text-slate-600 dark:text-slate-400">
+        A deliberately boring, deliberately open stack. Nothing here needs a licence.
+      </p>
+    </div>
+
+    <div class="mx-auto mt-12 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+      <div class="reveal card flex flex-col items-center justify-center gap-2 p-5 text-center"><span class="text-sm font-semibold">Django 6</span><span class="text-xs text-slate-500">Framework</span></div>
+      <div class="reveal card flex flex-col items-center justify-center gap-2 p-5 text-center" data-reveal-delay="50"><span class="text-sm font-semibold">Python 3.14</span><span class="text-xs text-slate-500">Language</span></div>
+      <div class="reveal card flex flex-col items-center justify-center gap-2 p-5 text-center" data-reveal-delay="100"><span class="text-sm font-semibold">Tailwind 4</span><span class="text-xs text-slate-500">Styling</span></div>
+      <div class="reveal card flex flex-col items-center justify-center gap-2 p-5 text-center" data-reveal-delay="150"><span class="text-sm font-semibold">SQLite</span><span class="text-xs text-slate-500">Database</span></div>
+      <div class="reveal card flex flex-col items-center justify-center gap-2 p-5 text-center" data-reveal-delay="200"><span class="text-sm font-semibold">OpenRouter</span><span class="text-xs text-slate-500">AI gateway</span></div>
+      <div class="reveal card flex flex-col items-center justify-center gap-2 p-5 text-center" data-reveal-delay="250"><span class="text-sm font-semibold">Chart.js</span><span class="text-xs text-slate-500">Charts</span></div>
+    </div>
+  </div>
+</section>
+
+{# ---------- Timeline ---------- #}
+<section class="pb-24">
+  <div class="section mx-auto max-w-3xl">
+    <h2 class="reveal text-center text-3xl font-bold">How it came together</h2>
+
+    <ol class="mt-12 space-y-8">
+      {% include "partials/timeline_item.html" with n="1" title="Foundation" body="Django project, custom email-first user model, Tailwind design system and the public site." %}
+      {% include "partials/timeline_item.html" with n="2" title="The AI layer" body="OpenRouter client with retries and backoff, a constrained prompt, and a parser built to survive malformed model output." delay=80 %}
+      {% include "partials/timeline_item.html" with n="3" title="The panel" body="Ticket submission, results, searchable history and per-ticket detail — all scoped to the signed-in user." delay=160 %}
+      {% include "partials/timeline_item.html" with n="4" title="Insight" body="Aggregate dashboard, distribution charts, 30-day volume trends and CSV/JSON export." delay=240 last=True %}
+    </ol>
+  </div>
+</section>
+
+{% endblock %}

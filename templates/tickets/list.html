@@ -1,0 +1,79 @@
+{% extends "base_panel.html" %}
+
+{% block title %}Ticket history — SupportIQ{% endblock %}
+{% block page_title %}Ticket history{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Your tickets</h2>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+        {{ total }} ticket{{ total|pluralize }}{% if has_filters %} matching your filters{% endif %}
+      </p>
+    </div>
+
+    <div class="flex gap-2">
+      <a href="{% url 'tickets:export_csv' %}?{{ request.GET.urlencode }}" class="btn-secondary text-sm">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"/></svg>
+        CSV
+      </a>
+      <a href="{% url 'tickets:export_json' %}?{{ request.GET.urlencode }}" class="btn-secondary text-sm">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"/></svg>
+        JSON
+      </a>
+      <a href="{% url 'tickets:create' %}" class="btn-primary text-sm sm:hidden">New</a>
+    </div>
+  </div>
+
+  {# ---------- Filters ---------- #}
+  <form
+    class="card p-5"
+    hx-get="{% url 'tickets:list' %}"
+    hx-target="#ticket-results"
+    hx-select="#ticket-results"
+    hx-swap="outerHTML"
+    hx-trigger="input from:#id_q delay:300ms, change"
+    hx-indicator="#search-spinner"
+    hx-push-url="true"
+  >
+    <div class="relative">
+      {{ form.q }}
+      <div class="absolute top-1/2 right-3 -translate-y-1/2">
+        <svg id="search-spinner" class="htmx-indicator h-4 w-4 animate-spin text-brand-500" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+          <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+      <div><label for="{{ form.category.id_for_label }}" class="sr-only">Category</label>{{ form.category }}</div>
+      <div><label for="{{ form.priority.id_for_label }}" class="sr-only">Priority</label>{{ form.priority }}</div>
+      <div><label for="{{ form.sentiment.id_for_label }}" class="sr-only">Sentiment</label>{{ form.sentiment }}</div>
+      <div><label for="{{ form.status.id_for_label }}" class="sr-only">Status</label>{{ form.status }}</div>
+      <div><label for="{{ form.date_from.id_for_label }}" class="sr-only">From</label>{{ form.date_from }}</div>
+      <div><label for="{{ form.date_to.id_for_label }}" class="sr-only">To</label>{{ form.date_to }}</div>
+    </div>
+
+    <div class="mt-4 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <label for="{{ form.sort.id_for_label }}" class="text-xs font-medium whitespace-nowrap text-slate-500">Sort by</label>
+        <div class="w-44">{{ form.sort }}</div>
+      </div>
+
+      {% if has_filters %}
+        <a href="{% url 'tickets:list' %}" class="btn-ghost text-xs">
+          <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+          Clear filters
+        </a>
+      {% endif %}
+    </div>
+  </form>
+
+  {# ---------- Results (HTMX swaps this) ---------- #}
+  {% include "tickets/partials/ticket_table.html" %}
+
+</div>
+{% endblock %}

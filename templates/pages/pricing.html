@@ -1,0 +1,113 @@
+{% extends "base_public.html" %}
+
+{% block title %}Pricing — SupportIQ{% endblock %}
+
+{% block content %}
+
+<section class="relative overflow-hidden pt-32 pb-12 sm:pt-40">
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-brand-400/20 blur-3xl animate-blob dark:bg-brand-600/15"></div>
+  </div>
+  <div class="section text-center">
+    <div class="reveal badge-brand mb-6">Pricing</div>
+    <h1 class="reveal text-4xl font-extrabold tracking-tight sm:text-5xl" data-reveal-delay="60">
+      Simple, <span class="heading-gradient">honest</span> pricing
+    </h1>
+    <p class="reveal mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400" data-reveal-delay="120">
+      SupportIQ is a learning project, so everything is free. The tiers below show
+      how it would be packaged as a real product.
+    </p>
+  </div>
+</section>
+
+<section class="pb-24" x-data="{ yearly: false }">
+  <div class="section">
+
+    {# Billing toggle #}
+    <div class="reveal mb-12 flex items-center justify-center gap-4">
+      <span class="text-sm font-medium" :class="!yearly ? 'text-slate-900 dark:text-white' : 'text-slate-500'">Monthly</span>
+      <button
+        type="button"
+        @click="yearly = !yearly"
+        class="relative h-7 w-14 shrink-0 rounded-full transition-colors duration-300"
+        :class="yearly ? 'bg-brand-600' : 'bg-slate-300 dark:bg-slate-700'"
+        role="switch"
+        :aria-checked="yearly.toString()"
+        aria-label="Toggle yearly billing"
+      >
+        <span class="absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all duration-300"
+              :class="yearly ? 'left-8' : 'left-1'"></span>
+      </button>
+      <span class="text-sm font-medium" :class="yearly ? 'text-slate-900 dark:text-white' : 'text-slate-500'">
+        Yearly
+        <span class="badge-positive ml-1">Save 20%</span>
+      </span>
+    </div>
+
+    <div class="mx-auto grid max-w-5xl gap-6 lg:grid-cols-3">
+
+      {# --- Free --- #}
+      <div class="reveal card flex flex-col p-8">
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Starter</h3>
+        <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400">For trying it out</p>
+        <p class="mt-6 flex items-baseline gap-1">
+          <span class="text-4xl font-extrabold text-slate-900 dark:text-white">₹0</span>
+          <span class="text-sm text-slate-500">/month</span>
+        </p>
+        <ul class="mt-8 flex-1 space-y-3 text-sm">
+          {% include "partials/tick.html" with text="30 analyses per hour" %}
+          {% include "partials/tick.html" with text="All 6 categories" %}
+          {% include "partials/tick.html" with text="Ticket history &amp; search" %}
+          {% include "partials/tick.html" with text="Analytics dashboard" %}
+          {% include "partials/tick.html" with text="CSV &amp; JSON export" %}
+        </ul>
+        <a href="{% url 'accounts:register' %}" class="btn-secondary mt-8 w-full">Get started</a>
+      </div>
+
+      {# --- Pro (highlighted) --- #}
+      <div class="reveal relative card flex flex-col border-2 border-brand-500 p-8 shadow-glow lg:-mt-4 lg:mb-[-1rem]" data-reveal-delay="80">
+        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
+          <span class="badge bg-brand-600 text-white shadow-lg">Most popular</span>
+        </div>
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Pro</h3>
+        <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400">For working support teams</p>
+        <p class="mt-6 flex items-baseline gap-1">
+          <span class="text-4xl font-extrabold text-slate-900 dark:text-white" x-text="yearly ? '₹1,199' : '₹1,499'">₹1,499</span>
+          <span class="text-sm text-slate-500">/month</span>
+        </p>
+        <p class="mt-1 text-xs text-emerald-600 dark:text-emerald-400" x-show="yearly" x-cloak>Billed ₹14,388 yearly</p>
+        <ul class="mt-8 flex-1 space-y-3 text-sm">
+          {% include "partials/tick.html" with text="Unlimited analyses" %}
+          {% include "partials/tick.html" with text="Priority model access" %}
+          {% include "partials/tick.html" with text="Custom categories" %}
+          {% include "partials/tick.html" with text="Team accounts" %}
+          {% include "partials/tick.html" with text="Email support" %}
+        </ul>
+        <a href="{% url 'accounts:register' %}" class="btn-primary mt-8 w-full">Start free trial</a>
+      </div>
+
+      {# --- Enterprise --- #}
+      <div class="reveal card flex flex-col p-8" data-reveal-delay="160">
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Enterprise</h3>
+        <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400">For large volumes</p>
+        <p class="mt-6 flex items-baseline gap-1">
+          <span class="text-4xl font-extrabold text-slate-900 dark:text-white">Custom</span>
+        </p>
+        <ul class="mt-8 flex-1 space-y-3 text-sm">
+          {% include "partials/tick.html" with text="Everything in Pro" %}
+          {% include "partials/tick.html" with text="Self-hosted deployment" %}
+          {% include "partials/tick.html" with text="Bring your own model" %}
+          {% include "partials/tick.html" with text="SSO &amp; audit logs" %}
+          {% include "partials/tick.html" with text="Dedicated support" %}
+        </ul>
+        <a href="{% url 'pages:contact' %}" class="btn-secondary mt-8 w-full">Contact us</a>
+      </div>
+    </div>
+
+    <p class="reveal mt-12 text-center text-sm text-slate-500 dark:text-slate-500">
+      This is a portfolio project — no payments are processed and no card is ever asked for.
+    </p>
+  </div>
+</section>
+
+{% endblock %}

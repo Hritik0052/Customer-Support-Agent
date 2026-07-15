@@ -1,0 +1,140 @@
+{% comment %}
+The results region. The view returns this fragment alone for HTMX requests, so
+the outer element id must stay stable — it is the swap target.
+{% endcomment %}
+
+<div id="ticket-results">
+{% if page_obj.object_list %}
+
+  {# ---------- Desktop table ---------- #}
+  <div class="card hidden overflow-hidden lg:block">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="border-b border-slate-200 bg-slate-50 text-xs tracking-wide text-slate-500 uppercase dark:border-slate-800 dark:bg-slate-800/50">
+          <tr>
+            <th scope="col" class="px-5 py-3.5 font-semibold">Ticket</th>
+            <th scope="col" class="px-5 py-3.5 font-semibold">Customer</th>
+            <th scope="col" class="px-5 py-3.5 font-semibold">Category</th>
+            <th scope="col" class="px-5 py-3.5 font-semibold">Priority</th>
+            <th scope="col" class="px-5 py-3.5 font-semibold">Sentiment</th>
+            <th scope="col" class="px-5 py-3.5 text-right font-semibold">Created</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+          {% for ticket in page_obj %}
+            <tr class="group transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/40">
+              <td class="px-5 py-4">
+                <a href="{{ ticket.get_absolute_url }}" class="block">
+                  <p class="font-semibold text-slate-900 transition-colors group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-400">
+                    {{ ticket.subject|truncatechars:52 }}
+                  </p>
+                  <p class="mt-0.5 line-clamp-1 text-xs text-slate-500">{{ ticket.summary|default:ticket.message|truncatechars:70 }}</p>
+                </a>
+              </td>
+              <td class="px-5 py-4">
+                <p class="font-medium text-slate-700 dark:text-slate-300">{{ ticket.customer_name }}</p>
+                <p class="text-xs text-slate-500">{{ ticket.email|truncatechars:26 }}</p>
+              </td>
+              <td class="px-5 py-4">
+                {% if ticket.category %}
+                  <span class="badge-brand">{{ ticket.get_category_display }}</span>
+                {% else %}
+                  {% include "tickets/partials/status_pill.html" with ticket=ticket %}
+                {% endif %}
+              </td>
+              <td class="px-5 py-4">
+                {% if ticket.priority %}<span class="{{ ticket.priority_badge_class }}">{{ ticket.get_priority_display }}</span>{% else %}<span class="text-xs text-slate-400">—</span>{% endif %}
+              </td>
+              <td class="px-5 py-4">
+                {% if ticket.sentiment %}<span class="{{ ticket.sentiment_badge_class }}">{{ ticket.get_sentiment_display }}</span>{% else %}<span class="text-xs text-slate-400">—</span>{% endif %}
+              </td>
+              <td class="px-5 py-4 text-right">
+                <span class="text-xs whitespace-nowrap text-slate-500" title="{{ ticket.created_at|date:'j M Y, H:i' }}">{{ ticket.created_at|timesince }} ago</span>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# ---------- Mobile cards ---------- #}
+  <div class="space-y-3 lg:hidden">
+    {% for ticket in page_obj %}
+      <a href="{{ ticket.get_absolute_url }}" class="card-hover block p-4">
+        <div class="flex items-start justify-between gap-3">
+          <p class="font-semibold text-slate-900 dark:text-white">{{ ticket.subject|truncatechars:44 }}</p>
+          <span class="shrink-0 text-xs text-slate-400">{{ ticket.created_at|timesince|truncatewords:1 }}</span>
+        </div>
+        <p class="mt-1 line-clamp-2 text-xs text-slate-500">{{ ticket.summary|default:ticket.message|truncatechars:110 }}</p>
+        <div class="mt-3 flex flex-wrap gap-1.5">
+          {% if ticket.category %}<span class="badge-brand">{{ ticket.get_category_display }}</span>{% endif %}
+          {% if ticket.priority %}<span class="{{ ticket.priority_badge_class }}">{{ ticket.get_priority_display }}</span>{% endif %}
+          {% if ticket.sentiment %}<span class="{{ ticket.sentiment_badge_class }}">{{ ticket.get_sentiment_display }}</span>{% endif %}
+          {% if not ticket.is_analyzed %}{% include "tickets/partials/status_pill.html" with ticket=ticket %}{% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+
+  {# ---------- Pagination ---------- #}
+  {% if page_obj.has_other_pages %}
+    <nav class="mt-6 flex items-center justify-between" aria-label="Pagination">
+      <p class="text-xs text-slate-500">
+        Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }}
+      </p>
+
+      <div class="flex items-center gap-1">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{{ querystring }}" class="btn-secondary !px-3 !py-1.5 text-xs" aria-label="Previous page">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M15 19l-7-7 7-7"/></svg>
+          </a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if num == page_obj.number %}
+            <span class="btn bg-brand-600 !px-3.5 !py-1.5 text-xs text-white" aria-current="page">{{ num }}</span>
+          {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+            <a href="?page={{ num }}{{ querystring }}" class="btn-ghost !px-3.5 !py-1.5 text-xs">{{ num }}</a>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{{ querystring }}" class="btn-secondary !px-3 !py-1.5 text-xs" aria-label="Next page">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        {% endif %}
+      </div>
+    </nav>
+  {% endif %}
+
+{% else %}
+
+  {# ---------- Empty state ---------- #}
+  <div class="card p-12 text-center">
+    <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800">
+      <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+      </svg>
+    </div>
+
+    {% if has_filters %}
+      <h3 class="text-lg font-semibold text-slate-900 dark:text-white">No tickets match those filters</h3>
+      <p class="mx-auto mt-2 max-w-sm text-sm text-slate-600 dark:text-slate-400">
+        Try widening your search or clearing a filter or two.
+      </p>
+      <a href="{% url 'tickets:list' %}" class="btn-secondary mt-6">Clear all filters</a>
+    {% else %}
+      <h3 class="text-lg font-semibold text-slate-900 dark:text-white">No tickets yet</h3>
+      <p class="mx-auto mt-2 max-w-sm text-sm text-slate-600 dark:text-slate-400">
+        Paste your first customer message and watch the AI classify it in a few seconds.
+      </p>
+      <a href="{% url 'tickets:create' %}" class="btn-primary mt-6">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+        Create your first ticket
+      </a>
+    {% endif %}
+  </div>
+
+{% endif %}
+</div>

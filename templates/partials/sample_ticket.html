@@ -1,0 +1,20 @@
+{% comment %}Params: name, email, subject, body. Fills the create form on click.{% endcomment %}
+<button
+  type="button"
+  class="w-full rounded-xl border border-slate-200 p-3 text-left transition-all hover:border-brand-300 hover:bg-brand-50/50 dark:border-slate-800 dark:hover:border-brand-700 dark:hover:bg-brand-500/5"
+  @click="
+    document.getElementById('id_customer_name').value = '{{ name|escapejs }}';
+    document.getElementById('id_email').value = '{{ email|escapejs }}';
+    document.getElementById('id_subject').value = '{{ subject|escapejs }}';
+    const m = document.getElementById('id_message');
+    m.value = '{{ body|escapejs }}';
+    // The form's x-model lives in a sibling Alpine scope, so `message` is not
+    // reachable from here. An input event is what x-model actually listens for.
+    m.dispatchEvent(new Event('input'));
+    open = false;
+    m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  "
+>
+  <p class="text-sm font-medium text-slate-900 dark:text-white">{{ subject }}</p>
+  <p class="mt-0.5 line-clamp-1 text-xs text-slate-500 dark:text-slate-400">{{ body }}</p>
+</button>

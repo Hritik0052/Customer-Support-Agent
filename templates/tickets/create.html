@@ -1,0 +1,114 @@
+{% extends "base_panel.html" %}
+
+{% block title %}New ticket — SupportIQ{% endblock %}
+{% block page_title %}New ticket{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl">
+
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Classify a support ticket</h2>
+    <p class="mt-1.5 text-sm text-slate-600 dark:text-slate-400">
+      Paste the customer's message. The AI returns a category, priority, sentiment,
+      summary and a draft reply in a few seconds.
+    </p>
+  </div>
+
+  <form
+    method="post"
+    class="card space-y-6 p-7"
+    novalidate
+    x-data="{ message: '{{ form.message.value|default:''|escapejs }}', submitting: false }"
+    @submit="submitting = true"
+  >
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="grid gap-5 sm:grid-cols-2">
+      {% include "partials/field.html" with field=form.customer_name %}
+      {% include "partials/field.html" with field=form.email %}
+    </div>
+
+    {% include "partials/field.html" with field=form.subject %}
+
+    <div>
+      <div class="flex items-baseline justify-between">
+        <label for="{{ form.message.id_for_label }}" class="label">
+          {{ form.message.label }} <span class="text-rose-500" aria-hidden="true">*</span>
+        </label>
+        <span class="text-xs tabular-nums transition-colors"
+              :class="message.length > 5000 ? 'text-rose-500 font-semibold' : (message.length >= 20 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400')">
+          <span x-text="message.length">0</span> / 5000
+        </span>
+      </div>
+
+      {{ form.message }}
+
+      <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-500"
+         x-show="message.length < 20"
+         x-transition>
+        At least 20 characters — short messages can't be classified reliably.
+      </p>
+
+      {% for error in form.message.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+    </div>
+
+    <div class="flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
+      <p class="text-xs text-slate-500 dark:text-slate-500">
+        Analysis usually takes 3–10 seconds.
+      </p>
+
+      <div class="flex gap-3">
+        <a href="{% url 'tickets:list' %}" class="btn-secondary">Cancel</a>
+        <button type="submit" class="btn-primary min-w-[10rem]" :disabled="submitting">
+          <template x-if="!submitting">
+            <span class="inline-flex items-center gap-2">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              Analyse ticket
+            </span>
+          </template>
+          <template x-if="submitting">
+            <span class="inline-flex items-center gap-2">
+              <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"/>
+              </svg>
+              <span x-data="{ i: 0, labels: ['Analysing…', 'Detecting category…', 'Judging priority…', 'Reading sentiment…', 'Drafting a reply…'] }"
+                    x-init="setInterval(() => i = (i + 1) % labels.length, 1600)"
+                    x-text="labels[i]"></span>
+            </span>
+          </template>
+        </button>
+      </div>
+    </div>
+  </form>
+
+  {# Sample tickets to make the empty form easy to try #}
+  <div class="mt-6 card p-6" x-data="{ open: false }">
+    <button type="button" @click="open = !open" class="flex w-full items-center justify-between text-left">
+      <span class="text-sm font-semibold text-slate-900 dark:text-white">Need a sample ticket to try?</span>
+      <svg class="h-5 w-5 text-slate-400 transition-transform duration-200" :class="open && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+
+    <div
+      x-show="open"
+      x-cloak
+      x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0 -translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      class="mt-4 space-y-3"
+    >
+      <p class="text-xs text-slate-500">Click one to fill the form.</p>
+      {% include "partials/sample_ticket.html" with name="Priya Sharma" email="priya@example.com" subject="Charged twice for my Pro plan" body="I was billed 1499 rupees twice this month for one subscription. This is the second time it has happened and I am losing patience. Please refund the duplicate charge." %}
+      {% include "partials/sample_ticket.html" with name="Tom Baker" email="tom@example.com" subject="Export button does nothing on Safari" body="Clicking Export CSV on the reports page does nothing in Safari 17. No download, no error message. Works fine in Chrome. Not urgent for me since I can switch browsers, just wanted to flag it." %}
+      {% include "partials/sample_ticket.html" with name="Aisha Khan" email="aisha@example.com" subject="Any plans for a dark mode?" body="Love the product, we use it daily across the team. Would be great to have a dark theme for late night shifts. Is that on the roadmap anywhere?" %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

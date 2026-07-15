@@ -1,0 +1,71 @@
+{% extends "base_public.html" %}
+
+{% block title %}Features — SupportIQ{% endblock %}
+
+{% block content %}
+
+<section class="relative overflow-hidden pt-32 pb-16 sm:pt-40">
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="absolute -top-24 right-1/4 h-96 w-96 rounded-full bg-accent-400/20 blur-3xl animate-blob dark:bg-accent-600/15"></div>
+  </div>
+  <div class="section text-center">
+    <div class="reveal badge-brand mb-6">Features</div>
+    <h1 class="reveal text-4xl font-extrabold tracking-tight sm:text-5xl" data-reveal-delay="60">
+      One pass. <span class="heading-gradient">Every signal.</span>
+    </h1>
+    <p class="reveal mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400" data-reveal-delay="120">
+      A single AI call extracts everything an agent would spend three minutes working out by hand.
+    </p>
+  </div>
+</section>
+
+<section class="pb-20">
+  <div class="section grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {% include "partials/feature_card.html" with color="brand" title="Smart categorisation" body="Six categories — billing, bug, feature request, technical, account, general. If the model invents a seventh, the parser maps it back onto a real one." icon="tag" %}
+    {% include "partials/feature_card.html" with delay=80 color="orange" title="Priority detection" body="Graded on business impact, not volume. A calm report of an outage still comes out urgent; an angry note about a typo does not." icon="fire" %}
+    {% include "partials/feature_card.html" with delay=160 color="rose" title="Sentiment analysis" body="Tone is judged separately from severity, so you can spot the customers who are actually about to churn." icon="heart" %}
+    {% include "partials/feature_card.html" with color="emerald" title="Instant summaries" body="One or two sentences of what the customer actually wants, stripped of the story around it." icon="doc" %}
+    {% include "partials/feature_card.html" with delay=80 color="violet" title="Suggested replies" body="A specific, polite draft — never inventing refunds, ticket numbers or timelines it was not given." icon="chat" %}
+    {% include "partials/feature_card.html" with delay=160 color="sky" title="Confidence scores" body="Every classification carries a 0–100% score, so low-confidence tickets can be routed to a human." icon="chart" %}
+  </div>
+</section>
+
+<section class="border-t border-slate-200 bg-slate-50 py-20 dark:border-slate-800 dark:bg-slate-900/40">
+  <div class="section">
+    <h2 class="reveal text-center text-3xl font-bold">And once it's classified</h2>
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="reveal card p-6">
+        <h3 class="font-semibold text-slate-900 dark:text-white">Searchable history</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Full-text search across name, email, subject and message, with filters that combine and survive pagination.</p>
+      </div>
+      <div class="reveal card p-6" data-reveal-delay="60">
+        <h3 class="font-semibold text-slate-900 dark:text-white">Analytics dashboard</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Category, priority and sentiment distribution plus a 30-day volume trend, computed in a single query.</p>
+      </div>
+      <div class="reveal card p-6" data-reveal-delay="120">
+        <h3 class="font-semibold text-slate-900 dark:text-white">CSV &amp; JSON export</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Export exactly what you filtered — not the whole table — and open it straight in Excel.</p>
+      </div>
+      <div class="reveal card p-6" data-reveal-delay="180">
+        <h3 class="font-semibold text-slate-900 dark:text-white">Retry on failure</h3>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">If the model is down or returns nonsense, the ticket is still saved and one click re-runs the analysis.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-20">
+  <div class="section text-center">
+    <h2 class="reveal text-3xl font-bold">See it on your own tickets</h2>
+    <p class="reveal mx-auto mt-4 max-w-lg text-slate-600 dark:text-slate-400" data-reveal-delay="60">Free to start, no card required.</p>
+    <div class="reveal mt-8" data-reveal-delay="120">
+      {% if user.is_authenticated %}
+        <a href="{% url 'tickets:create' %}" class="btn-primary">Classify a ticket</a>
+      {% else %}
+        <a href="{% url 'accounts:register' %}" class="btn-primary">Get started free</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

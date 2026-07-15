@@ -1,0 +1,72 @@
+{% extends "base_panel.html" %}
+
+{% block title %}Analysis result — SupportIQ{% endblock %}
+{% block page_title %}Analysis result{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl space-y-6">
+
+  {% if ticket.status == 'failed' %}
+    {# ---------- Failure state: the ticket is saved, the analysis is not ---------- #}
+    <div class="card border-rose-200 p-8 text-center dark:border-rose-500/30">
+      <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400">
+        <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>
+      </div>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white">Analysis didn't complete</h2>
+      <p class="mx-auto mt-3 max-w-md text-sm text-slate-600 dark:text-slate-400">
+        {{ ticket.error_message|default:"The AI service could not be reached." }}
+      </p>
+      <p class="mt-2 text-xs text-slate-500">
+        Your ticket was saved — nothing was lost. You can retry the analysis.
+      </p>
+
+      <div class="mt-7 flex justify-center gap-3">
+        <form method="post" action="{% url 'tickets:reanalyze' ticket.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M20 9A8 8 0 006 5.3L4 7m0 8a8 8 0 0014 3.7l2-1.7"/></svg>
+            Retry analysis
+          </button>
+        </form>
+        <a href="{% url 'tickets:detail' ticket.pk %}" class="btn-secondary">View ticket</a>
+      </div>
+    </div>
+
+  {% else %}
+    {# ---------- Success ---------- #}
+    <div class="card overflow-hidden">
+      <div class="border-b border-slate-200 bg-gradient-to-r from-brand-50 to-accent-50 p-6 dark:border-slate-800 dark:from-brand-500/10 dark:to-accent-500/10">
+        <div class="flex items-start gap-4">
+          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div class="min-w-0">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Ticket analysed</h2>
+            <p class="mt-0.5 text-sm text-slate-600 dark:text-slate-400">
+              Classified in {{ ticket.processing_time|floatformat:1 }}s by
+              <span class="font-mono text-xs">{{ ticket.model_name }}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {% include "tickets/partials/analysis.html" with ticket=ticket %}
+    </div>
+
+    <div class="flex flex-col gap-3 sm:flex-row sm:justify-between">
+      <a href="{% url 'tickets:create' %}" class="btn-secondary">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+        Analyse another
+      </a>
+      <div class="flex gap-3">
+        <a href="{% url 'tickets:list' %}" class="btn-secondary">All tickets</a>
+        <a href="{% url 'tickets:detail' ticket.pk %}" class="btn-primary">
+          View full detail
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

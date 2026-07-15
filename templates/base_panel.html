@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block body_class %}bg-slate-50 dark:bg-slate-950{% endblock %}
+
+{% block layout %}
+<div x-data="{ sidebarOpen: false }" class="min-h-screen">
+
+  {% include "partials/sidebar.html" %}
+
+  {# Backdrop for the mobile sidebar #}
+  <div
+    x-show="sidebarOpen"
+    x-cloak
+    x-transition.opacity
+    @click="sidebarOpen = false"
+    class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-sm lg:hidden"
+    aria-hidden="true"
+  ></div>
+
+  <div class="lg:pl-64">
+    {% comment %}
+      The topbar is inline here rather than in a partial because it renders a
+      template block, and blocks do not cross include boundaries.
+    {% endcomment %}
+    <header class="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8 dark:border-slate-800 dark:bg-slate-950/80">
+      <button
+        type="button"
+        @click="sidebarOpen = true"
+        class="btn-ghost px-2 lg:hidden"
+        aria-label="Open sidebar"
+      >
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+
+      <div class="min-w-0 flex-1">
+        <h1 class="truncate text-lg font-bold text-slate-900 dark:text-white">{% block page_title %}{% endblock %}</h1>
+      </div>
+
+      <div class="flex items-center gap-2">
+        {% include "partials/theme_toggle.html" %}
+        <a href="{% url 'tickets:create' %}" class="btn-primary hidden sm:inline-flex">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+          New ticket
+        </a>
+      </div>
+    </header>
+
+    <main id="main" class="px-4 py-8 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+<footer class="border-t border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50">
+  <div class="section py-14">
+    <div class="grid gap-10 md:grid-cols-4">
+      <div class="md:col-span-2">
+        <a href="{% url 'pages:home' %}" class="flex items-center gap-2.5 text-lg font-bold">
+          {% include "partials/logo.html" %}
+          <span class="heading-gradient">SupportIQ</span>
+        </a>
+        <p class="mt-4 max-w-sm text-sm text-slate-600 dark:text-slate-400">
+          AI-powered support triage. Classify tickets, detect priority and sentiment,
+          and draft replies in seconds instead of minutes.
+        </p>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Product</h3>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a href="{% url 'pages:features' %}" class="text-slate-600 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400">Features</a></li>
+          <li><a href="{% url 'pages:how_it_works' %}" class="text-slate-600 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400">How it works</a></li>
+          <li><a href="{% url 'pages:pricing' %}" class="text-slate-600 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400">Pricing</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold text-slate-900 dark:text-slate-100">Company</h3>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li><a href="{% url 'pages:about' %}" class="text-slate-600 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400">About</a></li>
+          <li><a href="{% url 'pages:contact' %}" class="text-slate-600 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 sm:flex-row dark:border-slate-800">
+      <p class="text-sm text-slate-500 dark:text-slate-500">
+        &copy; {% now "Y" %} SupportIQ. Built with Django, Tailwind CSS and OpenRouter.
+      </p>
+      <p class="text-xs text-slate-400 dark:text-slate-600">A learning project — not a commercial service.</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,282 @@
+@import "tailwindcss";
+
+/* Tailwind v4 scans these for class names. */
+@source "../../templates";
+@source "../../accounts";
+@source "../../pages";
+@source "../../tickets";
+@source "../../dashboard";
+@source "../js";
+
+/* Class-based dark mode: we toggle `.dark` on <html> from JS. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   Design tokens
+   ========================================================================== */
+
+@theme {
+  /* Brand — indigo/violet */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+  --color-brand-950: #1e1b4b;
+
+  --color-accent-400: #a78bfa;
+  --color-accent-500: #8b5cf6;
+  --color-accent-600: #7c3aed;
+
+  /* Semantic — priority */
+  --color-priority-low: #10b981;
+  --color-priority-medium: #f59e0b;
+  --color-priority-high: #f97316;
+  --color-priority-urgent: #ef4444;
+
+  /* Semantic — sentiment */
+  --color-sentiment-positive: #10b981;
+  --color-sentiment-neutral: #64748b;
+  --color-sentiment-negative: #f43f5e;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+
+  --radius-card: 1rem;
+
+  --shadow-glow: 0 0 40px -10px rgb(99 102 241 / 0.45);
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.06), 0 8px 24px -12px rgb(0 0 0 / 0.12);
+
+  /* Motion */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-gradient: gradient 12s ease infinite;
+  --animate-blob: blob 18s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-fade-up: fade-up 0.5s ease-out both;
+  --animate-caret: caret 1s step-end infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.1); }
+  66% { transform: translate(-30px, 20px) scale(0.95); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Hide Alpine-controlled elements until Alpine has hydrated them,
+     otherwise mobile menus flash open on load. */
+  [x-cloak] {
+    display: none !important;
+  }
+
+  body {
+    @apply bg-white text-slate-800 antialiased;
+    @apply dark:bg-slate-950 dark:text-slate-200;
+  }
+
+  ::selection {
+    @apply bg-brand-500/25;
+  }
+
+  /* Visible focus for keyboard users only. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { @apply bg-slate-100 dark:bg-slate-900; }
+  ::-webkit-scrollbar-thumb { @apply rounded-full bg-slate-300 dark:bg-slate-700; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-slate-600; }
+}
+
+/* ==========================================================================
+   Components
+   ========================================================================== */
+
+/* `btn` and `badge` are declared with @utility rather than as plain component
+   classes so that the variants below can @apply them — Tailwind v4 only allows
+   @apply of registered utilities. */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5
+         text-sm font-semibold transition-all duration-200
+         disabled:pointer-events-none disabled:opacity-50;
+}
+
+@utility badge {
+  @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1
+         text-xs font-semibold whitespace-nowrap;
+}
+
+@utility card {
+  @apply rounded-card border border-slate-200 bg-white shadow-card
+         dark:border-slate-800 dark:bg-slate-900;
+}
+
+@layer components {
+  .btn-primary {
+    @apply btn bg-brand-600 text-white shadow-lg shadow-brand-600/25
+           hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow-xl hover:shadow-brand-600/35
+           active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply btn border border-slate-200 bg-white text-slate-700
+           hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-50
+           dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200
+           dark:hover:border-slate-600 dark:hover:bg-slate-800;
+  }
+
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100
+           dark:text-slate-300 dark:hover:bg-slate-800;
+  }
+
+  .btn-danger {
+    @apply btn bg-rose-600 text-white shadow-lg shadow-rose-600/25
+           hover:-translate-y-0.5 hover:bg-rose-700;
+  }
+
+  /* --- Surfaces --- */
+  .card-hover {
+    @apply card transition-all duration-300
+           hover:-translate-y-1 hover:border-brand-300 hover:shadow-xl
+           dark:hover:border-brand-700;
+  }
+
+  /* --- Forms --- */
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm
+           text-slate-900 placeholder:text-slate-400 transition-colors
+           focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 focus:outline-none
+           dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100
+           dark:placeholder:text-slate-500;
+  }
+
+  .input-error {
+    @apply border-rose-500 focus:border-rose-500 focus:ring-rose-500/15;
+  }
+
+  .form-error {
+    @apply mt-1.5 text-xs font-medium text-rose-600 dark:text-rose-400;
+  }
+
+  /* --- Badges --- */
+  .badge-low    { @apply badge bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400; }
+  .badge-medium   { @apply badge bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400; }
+  .badge-high     { @apply badge bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400; }
+  .badge-urgent   { @apply badge bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400; }
+  .badge-positive { @apply badge bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400; }
+  .badge-neutral  { @apply badge bg-slate-100 text-slate-600 dark:bg-slate-500/15 dark:text-slate-400; }
+  .badge-negative { @apply badge bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-400; }
+  .badge-brand    { @apply badge bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300; }
+
+  /* --- Typography --- */
+  .heading-gradient {
+    @apply bg-gradient-to-r from-brand-600 via-accent-500 to-brand-500
+           bg-clip-text text-transparent;
+    background-size: 200% auto;
+  }
+
+  .section {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* --- Effects --- */
+  .glass {
+    @apply border border-white/20 bg-white/70 backdrop-blur-xl
+           dark:border-white/10 dark:bg-slate-950/70;
+  }
+
+  .skeleton {
+    @apply rounded-lg bg-slate-200 dark:bg-slate-800;
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(255 255 255 / 0.35) 50%,
+      transparent 100%
+    );
+    background-size: 1000px 100%;
+    animation: var(--animate-shimmer);
+  }
+}
+
+/* ==========================================================================
+   Scroll reveal — the "before" state. JS adds .is-visible via
+   IntersectionObserver. Without JS, everything stays visible.
+   ========================================================================== */
+
+@layer utilities {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Accessibility: honour a reduced-motion preference.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

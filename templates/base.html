@@ -1,0 +1,35 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SupportIQ — AI Ticket Classifier{% endblock %}</title>
+  <meta name="description" content="{% block description %}Classify support tickets, detect priority and sentiment, and draft replies automatically with AI.{% endblock %}">
+
+  {# Set the theme before first paint so dark mode never flashes white. #}
+  <script>
+    (function () {
+      var stored = localStorage.getItem('theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="{% static 'css/output.css' %}">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen {% block body_class %}{% endblock %}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+  {% block layout %}{% endblock %}
+
+  {% include "partials/toasts.html" %}
+
+  <script src="{% static 'js/vendor/alpine.min.js' %}" defer></script>
+  <script src="{% static 'js/vendor/htmx.min.js' %}" defer></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

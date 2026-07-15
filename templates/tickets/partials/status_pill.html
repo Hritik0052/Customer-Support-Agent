@@ -1,0 +1,13 @@
+{% if ticket.status == 'failed' %}
+  <span class="badge-urgent">
+    <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+    Failed
+  </span>
+{% elif ticket.status == 'processing' %}
+  <span class="badge-medium">
+    <svg class="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true"><circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"/></svg>
+    Processing
+  </span>
+{% elif ticket.status == 'pending' %}
+  <span class="badge-neutral">Pending</span>
+{% endif %}

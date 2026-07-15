@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block layout %}
+<div class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12">
+
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-brand-400/20 blur-3xl animate-blob dark:bg-brand-600/15"></div>
+    <div class="absolute -right-32 -bottom-32 h-96 w-96 rounded-full bg-accent-400/20 blur-3xl animate-blob dark:bg-accent-600/15" style="animation-delay:-8s"></div>
+  </div>
+
+  <div class="w-full max-w-md">
+    <div class="mb-8 text-center">
+      <a href="{% url 'pages:home' %}" class="inline-flex items-center gap-2.5 text-xl font-bold">
+        {% include "partials/logo.html" %}
+        <span class="heading-gradient">SupportIQ</span>
+      </a>
+    </div>
+
+    <div class="card p-8 shadow-2xl">
+      {% block auth_content %}{% endblock %}
+    </div>
+
+    <p class="mt-6 text-center text-sm text-slate-500 dark:text-slate-500">
+      {% block auth_footer %}{% endblock %}
+    </p>
+  </div>
+</div>
+{% endblock %}

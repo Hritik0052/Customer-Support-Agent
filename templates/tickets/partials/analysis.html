@@ -1,0 +1,103 @@
+{% comment %}
+The AI analysis block. Shared by the result page and the detail page so the two
+can never drift apart.
+{% endcomment %}
+
+<div class="space-y-6 p-6">
+
+  {# --- Classification badges --- #}
+  <div class="grid gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+      <p class="text-xs font-semibold tracking-wide text-slate-400 uppercase">Category</p>
+      <p class="mt-2"><span class="badge-brand">{{ ticket.get_category_display }}</span></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+      <p class="text-xs font-semibold tracking-wide text-slate-400 uppercase">Priority</p>
+      <p class="mt-2"><span class="{{ ticket.priority_badge_class }}">{{ ticket.get_priority_display }}</span></p>
+    </div>
+    <div class="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+      <p class="text-xs font-semibold tracking-wide text-slate-400 uppercase">Sentiment</p>
+      <p class="mt-2"><span class="{{ ticket.sentiment_badge_class }}">{{ ticket.get_sentiment_display }}</span></p>
+    </div>
+  </div>
+
+  {# --- Confidence ring --- #}
+  {% if ticket.confidence_percent is not None %}
+    <div class="flex items-center gap-5 rounded-xl bg-slate-50 p-5 dark:bg-slate-800/40">
+      <div class="relative h-20 w-20 shrink-0"
+           x-data="{ pct: 0 }"
+           x-init="setTimeout(() => pct = {{ ticket.confidence_percent }}, 150)">
+        <svg class="h-20 w-20 -rotate-90" viewBox="0 0 80 80" aria-hidden="true">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="currentColor" stroke-width="7" class="text-slate-200 dark:text-slate-700"/>
+          <circle cx="40" cy="40" r="34" fill="none" stroke="url(#conf-gradient)" stroke-width="7" stroke-linecap="round"
+                  stroke-dasharray="213.6"
+                  :stroke-dashoffset="213.6 - (213.6 * pct / 100)"
+                  style="transition: stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1)"/>
+          <defs>
+            <linearGradient id="conf-gradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-lg font-bold text-slate-900 tabular-nums dark:text-white" x-text="Math.round(pct) + '%'">{{ ticket.confidence_percent }}%</span>
+        </div>
+      </div>
+
+      <div class="min-w-0">
+        <p class="font-semibold text-slate-900 dark:text-white">Confidence</p>
+        <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          {% if ticket.confidence_percent >= 85 %}
+            The model is confident in this classification.
+          {% elif ticket.confidence_percent >= 60 %}
+            Reasonably confident — worth a quick human glance.
+          {% else %}
+            Low confidence. This one is worth reviewing manually.
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  {% endif %}
+
+  {# --- Summary --- #}
+  <div>
+    <div class="mb-2 flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-slate-900 dark:text-white">AI summary</h3>
+      <button type="button" class="btn-ghost !px-2.5 !py-1 text-xs" data-copy-target="#summary-text">
+        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span data-copy-label>Copy</span>
+      </button>
+    </div>
+    <p id="summary-text" class="rounded-xl border border-slate-200 p-4 text-sm leading-relaxed text-slate-700 dark:border-slate-800 dark:text-slate-300">{{ ticket.summary }}</p>
+  </div>
+
+  {# --- Suggested reply --- #}
+  <div>
+    <div class="mb-2 flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Suggested reply</h3>
+      <button type="button" class="btn-ghost !px-2.5 !py-1 text-xs" data-copy-target="#reply-text">
+        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        <span data-copy-label>Copy</span>
+      </button>
+    </div>
+    <div id="reply-text" class="rounded-xl border border-brand-200 bg-brand-50/50 p-4 text-sm leading-relaxed whitespace-pre-line text-slate-700 dark:border-brand-500/25 dark:bg-brand-500/5 dark:text-slate-300">{{ ticket.suggested_reply }}</div>
+    <p class="mt-2 text-xs text-slate-500">Review before sending — the model can be confidently wrong.</p>
+  </div>
+
+  {# --- Run metadata --- #}
+  <div class="grid gap-3 border-t border-slate-200 pt-5 text-xs sm:grid-cols-3 dark:border-slate-800">
+    <div>
+      <p class="text-slate-400">Model</p>
+      <p class="mt-0.5 truncate font-mono text-slate-700 dark:text-slate-300" title="{{ ticket.model_name }}">{{ ticket.model_name|default:"—" }}</p>
+    </div>
+    <div>
+      <p class="text-slate-400">Processing time</p>
+      <p class="mt-0.5 font-semibold text-slate-700 tabular-nums dark:text-slate-300">{{ ticket.processing_time|floatformat:2|default:"—" }}s</p>
+    </div>
+    <div>
+      <p class="text-slate-400">Analysed</p>
+      <p class="mt-0.5 font-semibold text-slate-700 dark:text-slate-300">{{ ticket.updated_at|date:"j M Y, H:i" }}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,172 @@
+{% comment %}
+Self-contained hero demo: types a ticket, "analyses" it, reveals the result,
+then loops. Purely cosmetic — no API call. Values match what the real model
+returns for this ticket so the demo is honest about the product.
+{% endcomment %}
+
+<div
+  x-data="heroDemo()"
+  x-init="start()"
+  @mouseenter="paused = true"
+  @mouseleave="paused = false"
+  class="card relative overflow-hidden p-5 shadow-2xl sm:p-6"
+>
+  <div class="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-brand-500 to-transparent" aria-hidden="true"></div>
+
+  {# Window chrome #}
+  <div class="mb-5 flex items-center gap-2">
+    <span class="h-3 w-3 rounded-full bg-rose-400"></span>
+    <span class="h-3 w-3 rounded-full bg-amber-400"></span>
+    <span class="h-3 w-3 rounded-full bg-emerald-400"></span>
+    <span class="ml-2 text-xs font-medium text-slate-400">incoming-ticket.txt</span>
+  </div>
+
+  {# Ticket being typed #}
+  <div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-950/60">
+    <p class="text-xs font-semibold tracking-wide text-slate-400 uppercase">Subject</p>
+    <p class="mt-1 text-sm font-semibold text-slate-900 dark:text-white" x-text="typedSubject"></p>
+
+    <p class="mt-4 text-xs font-semibold tracking-wide text-slate-400 uppercase">Message</p>
+    <p class="mt-1 min-h-[4.5rem] text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+      <span x-text="typedBody"></span><span x-show="typing" class="animate-caret font-bold text-brand-500">▍</span>
+    </p>
+  </div>
+
+  {# Analysing state #}
+  <div x-show="analysing" x-cloak x-transition class="mt-5 flex items-center justify-center gap-3 py-6">
+    <svg class="h-5 w-5 animate-spin text-brand-600" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+      <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+      <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"/>
+    </svg>
+    <span class="text-sm font-medium text-slate-500" x-text="analysingLabel"></span>
+  </div>
+
+  {# Result #}
+  <div
+    x-show="showResult"
+    x-cloak
+    x-transition:enter="transition ease-out duration-500"
+    x-transition:enter-start="opacity-0 translate-y-3"
+    x-transition:enter-end="opacity-100 translate-y-0"
+    class="mt-5"
+  >
+    <div class="flex flex-wrap gap-2">
+      <span class="badge-brand" x-text="result.category"></span>
+      <span :class="'badge-' + result.priorityKey" x-text="result.priority"></span>
+      <span :class="'badge-' + result.sentimentKey" x-text="result.sentiment"></span>
+    </div>
+
+    <div class="mt-4 rounded-xl border border-slate-200 p-4 dark:border-slate-800">
+      <p class="text-xs font-semibold tracking-wide text-slate-400 uppercase">AI summary</p>
+      <p class="mt-1.5 text-sm text-slate-700 dark:text-slate-300" x-text="result.summary"></p>
+    </div>
+
+    <div class="mt-3 flex items-center justify-between rounded-xl bg-brand-50 px-4 py-3 dark:bg-brand-500/10">
+      <span class="text-xs font-semibold text-brand-700 dark:text-brand-300">Confidence</span>
+      <div class="flex flex-1 items-center gap-3 pl-4">
+        <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-brand-200 dark:bg-brand-900">
+          <div class="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500 transition-all duration-1000"
+               :style="'width:' + (showResult ? result.confidence : 0) + '%'"></div>
+        </div>
+        <span class="text-xs font-bold text-brand-700 tabular-nums dark:text-brand-300" x-text="result.confidence + '%'"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function heroDemo() {
+    return {
+      typedSubject: '',
+      typedBody: '',
+      typing: false,
+      analysing: false,
+      showResult: false,
+      paused: false,
+      analysingLabel: 'Analysing sentiment…',
+      result: {},
+
+      tickets: [
+        {
+          subject: 'Charged twice for my Pro plan',
+          body: "I was billed ₹1,499 twice this month for one subscription. This is the second time it has happened and I'm losing patience. Please refund the duplicate charge.",
+          category: 'Billing', priority: 'Urgent', priorityKey: 'urgent',
+          sentiment: 'Negative', sentimentKey: 'negative', confidence: 94,
+          summary: 'Customer was double-charged ₹1,499 for a single Pro subscription for the second consecutive month and is requesting a refund.',
+        },
+        {
+          subject: 'Export button does nothing on Safari',
+          body: 'Clicking Export CSV on the reports page does nothing in Safari 17. No download, no error. Works fine in Chrome. Not urgent, just flagging it.',
+          category: 'Bug', priority: 'Medium', priorityKey: 'medium',
+          sentiment: 'Neutral', sentimentKey: 'neutral', confidence: 88,
+          summary: 'CSV export silently fails in Safari 17 with no error shown, though it works in Chrome. A workaround exists.',
+        },
+        {
+          subject: 'Any plans for a dark mode?',
+          body: 'Love the product, we use it daily across the team. A dark theme would be great for late night shifts. Is that on the roadmap?',
+          category: 'Feature Request', priority: 'Low', priorityKey: 'low',
+          sentiment: 'Positive', sentimentKey: 'positive', confidence: 91,
+          summary: 'A satisfied daily user is asking whether a dark theme is planned, to make late-night shifts easier.',
+        },
+      ],
+
+      index: 0,
+
+      sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      },
+
+      async waitWhilePaused() {
+        while (this.paused) await this.sleep(150);
+      },
+
+      async type(text, key, speed) {
+        this[key] = '';
+        for (let i = 0; i < text.length; i++) {
+          await this.waitWhilePaused();
+          this[key] += text[i];
+          await this.sleep(speed);
+        }
+      },
+
+      async start() {
+        // Respect a reduced-motion preference: show the finished state, no loop.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          const t = this.tickets[0];
+          this.typedSubject = t.subject;
+          this.typedBody = t.body;
+          this.result = t;
+          this.showResult = true;
+          return;
+        }
+
+        while (true) {
+          const ticket = this.tickets[this.index];
+          this.showResult = false;
+          this.analysing = false;
+          this.typing = true;
+
+          await this.type(ticket.subject, 'typedSubject', 38);
+          await this.sleep(250);
+          await this.type(ticket.body, 'typedBody', 16);
+
+          this.typing = false;
+          this.analysing = true;
+
+          for (const label of ['Detecting category…', 'Judging priority…', 'Reading sentiment…', 'Drafting a reply…']) {
+            this.analysingLabel = label;
+            await this.sleep(500);
+          }
+
+          this.analysing = false;
+          this.result = ticket;
+          this.showResult = true;
+
+          await this.sleep(4200);
+          await this.waitWhilePaused();
+          this.index = (this.index + 1) % this.tickets.length;
+        }
+      },
+    };
+  }
+</script>

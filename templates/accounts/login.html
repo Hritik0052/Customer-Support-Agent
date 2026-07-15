@@ -1,0 +1,39 @@
+{% extends "accounts/auth_base.html" %}
+
+{% block title %}Sign in — SupportIQ{% endblock %}
+
+{% block auth_content %}
+  <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Welcome back</h1>
+  <p class="mt-1.5 text-sm text-slate-500 dark:text-slate-400">Sign in to your panel.</p>
+
+  <form method="post" class="mt-7 space-y-5" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+        {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+      </div>
+    {% endif %}
+
+    {% include "partials/field.html" with field=form.username %}
+
+    <div>
+      {% include "partials/field.html" with field=form.password %}
+      <div class="mt-2 text-right">
+        <a href="{% url 'accounts:password_reset' %}" class="text-xs font-medium text-brand-600 hover:underline dark:text-brand-400">Forgot your password?</a>
+      </div>
+    </div>
+
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+    <button type="submit" class="btn-primary w-full">
+      Sign in
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M13 7l5 5-5 5M6 12h12"/></svg>
+    </button>
+  </form>
+{% endblock %}
+
+{% block auth_footer %}
+  Don't have an account?
+  <a href="{% url 'accounts:register' %}" class="font-semibold text-brand-600 hover:underline dark:text-brand-400">Create one free</a>
+{% endblock %}
